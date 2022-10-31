@@ -1,0 +1,29 @@
+go to ==> C:/xampp/apache/conf/extra
+
+open ==> httpd-vhosts.conf
+
+delete everything on virtualhost:80 and add ==>
+
+
+<VirtualHost 127.0.0.1:8080>
+    DocumentRoot "C:\xampp\htdocs\Laravel\public"
+    DirectoryIndex index.php
+    ServerName echo.test
+    <Directory "C:\xampp\htdocs\Laravel\public">
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride all
+        Order Deny,Allow
+        Allow from all
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+
+go to ==> Windows > Search > Run
+paste ==> C:\Windows\System32\drivers\etc\hosts
+
+
+open Host file and add ==>
+
+127.0.0.1      echo.test
+::1            echo.test

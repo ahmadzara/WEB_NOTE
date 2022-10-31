@@ -1,0 +1,156 @@
+git init
+git status
+
+
+git add . (refers to current folder)
+git add (go to stage)
+
+
+git rm --cached <file> (unstage)
+git rm --cached -r images (-r for deleting folders)
+git rm --cached -r .  (unstaging all)
+
+
+git commit (go to repository)
+git commit -m (message)
+git commit --amend
+
+
+author: git config --global user.email "ahmad.r.zarre@gmail.com"
+git config --global user.name "ahmadzara"
+git config user.name or user.email
+git config --global core.editor "code --wait"
+git config --global -e 
+
+
+git log  
+git log --oneline
+git log --all --graph
+git log --oneline --all --graph
+git log --oneline --all
+
+
+.gitignore ==> *.log || main/*.key
+
+
+git branch -m master main ==> change master branch name
+git branch new_beanch
+git switch new_branch`
+git switch -c "branch2" ==> create and switch at the same time
+git branch -m <name> ==> change name
+git branch -d <name> ==> first checkout & delete branch 
+git branch == git branch --all == git branch -av (local and remote)
+
+
+merge branch2 to master ==> first go to master
+git merge origin/master ==> transfering incoming changes -merging incoming changes from origin to master
+
+
+git diff --help ==> to see all refrences 
+git diff --cached ==> see staged changes info
+git diff ==> compares staging area and working directory
+git diff --staged ==> compares last commit and staging area
+git diff HEAD ==> compares last commit and working directory
+git diff commit1..commit2 ==> compares two commits
+* git log --oneline
+* git diff a87ff02..b4616c6
+git diff branch1..branch2 ==> compares two branches
+
+
+git checkout <hashcode> ==> change HEAD pointer in log
+git checkout HEAD~2 
+git checkout -b new_branch old_branch ==> copying all branch info in another
+git chekcout HEAD data.txt || git restore data.txt     
+
+
+git restore --source HEAD data.txt
+git restore --source HEAD~3 data.txt
+
+
+git remote --help
+git remote add <url name> <url>
+git remote
+git remote remove || git remote rm <name>
+git remote <url name> <branch name>
+git remote -v
+get remote -rm origin ==> enter to ensure there is no remote control
+git remote -v ==> getting validation for the new address
+git remote --verbose(-v) ==> shows more info
+
+
+git push <remote><branch>
+git push -u py main 
+git push -f -u py <name of branch>
+git push hi main ==> to sync
+
+
+pull is equal to fetch/merge
+git fetch origin ==> only getting the latest changes instead of copying it manually
+git merge origin/main
+
+
+git pull remotename branchname
+
+
+git reset [file] ==> unstage a file while retaining the changes in working directory
+git reset .(or:HEAD) ==> unstages all staged files
+
+
+git clone [url] ==> retrieve an entire repository from a hosted location via URL
+
+
+git rebase [branch] ==> apply any commits of current branch ahead of specified one
+
+
+git stash ==> Save modified and staged changes
+git stash list ==> list stack-order of stashed file changes
+git stash pop ==> write working from top of stash stack
+git stash drop ==> discard the changes from top of stash stack
+
+
+git tag
+git tag --help
+git checkout v1.8 ==> we can switch between tags
+git tag -a v2.3 -m "#############"
+git tag -a v1.8 -m "##" 4a745b371e ==> commits
+git tag TagName == git show v1.8
+git push --delete origin TagName ==> deleting tag on the repository
+git tag -d TagName ==> deleting tag on local
+git push --tags ==> sending tags on repository
+git tag -a TagName == git tag -am "Desc" TagName  ==> adding tag with details
+git tag -n ==> showing tags with details
+git tag -l "v*" ==> shows all the tags starting with v
+git tag -s(small in tag) v1.8 -m ==> "signing and tagging together" 
+git tag -v(verify) v1.8
+git commit -S(capital in commit) -m "###" ==> encrypting commits
+
+
+git bisect --help 
+git bisect start
+git bisect bad ==> current situation is bad
+git bisect good fbc8a7e9f7d87ef ==> but this commit is good - checks stages and ask you again and you e.g write it is still bad ==> 
+git bisect bad ==> it goes on a loop to find it
+
+
+git help blame 
+git blame #######  ==> to find out who did sth
+
+
+
+
+how you can delete your biometrics in github? ==>
+control panel - user accounts - credentials - window credentials
+ 
+how to collaborate and give permission to others? ==>
+github account => setting => manage access => invite collaborator => search their id and click (it gives a link. send the link to them and they will accept)
+
+encrypting method => 
+pgb(pretty good privacy) aka. gpg
+gpg --gen-key ==> generating a key on GIT BASH - add name, mail & password and gives you a key 
+gpg --list-keys  ==> search for keys
+git config --global user.signingkey
+git config --global user.name or mail
+gpg --list-secret-keys --keyid-format LONG 
+==> you can use the code it gives as below
+git config --global user.signingkey DD6AAB3101B72803
+==> set you the private signingkey

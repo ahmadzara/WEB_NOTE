@@ -1,0 +1,161 @@
+HTML:
+<html>
+  <head>
+    <!-- Served to all users -->
+    <link rel="stylesheet" href="all.css" media="all" />
+    <!-- Served to screens that are at least 20em wide -->
+    <link rel="stylesheet" href="small.css" media="(min-width: 20em)" />
+    <!-- Served to screens that are at least 64em wide -->
+    <link rel="stylesheet" href="medium.css" media="(min-width: 64em)" />
+    <!-- Served to screens that are at least 90em wide -->
+    <link rel="stylesheet" href="large.css" media="(min-width: 90em)" />
+    <!-- Served to screens that are at least 120em wide -->
+    <link rel="stylesheet" href="extra-large.css" media="(min-width: 120em)" />
+    <!-- Served to print media, like printers -->
+    <link rel="stylesheet" href="print.css" media="print" />
+  </head>
+  <!-- ... -->
+</html>
+
+
+The viewport is the user's visible area of a web page.
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+The width=device-width part sets the width of the page to follow the screen-width of the device (which will vary depending on the device).
+The initial-scale=1.0 part sets the initial zoom level when the page is first loaded by the browser.
+
+Size Content to The Viewport:
+1. Do NOT use large fixed width elements - For example, if an image is displayed at a width wider than the viewport it can cause the viewport to scroll horizontally. Remember to adjust this content to fit within the width of the viewport.
+
+2. Do NOT let the content rely on a particular viewport width to render well - Since screen dimensions and width in CSS pixels vary widely between devices, content should not rely on a particular viewport width to render well.
+
+3. Use CSS media queries to apply different styling for small and large screens - Setting large absolute CSS widths for page elements will cause the element to be too wide for the viewport on a smaller device. Instead, consider using relative width values, such as width: 100%. Also, be careful of using large absolute positioning values. It may cause the element to fall outside the viewport on small devices.
+
+GRID VIEW:
+# This makes sure that the padding and border are included in the total width and height of the elements.
+* {
+  box-sizing: border-box;
+}
+
+# add a breakpoint when designing for desktop first
+@media only screen and (max-width: 768px) {
+  /* For mobile phones: */
+  [class*="col-"] {
+    width: 100%;
+  }
+}
+
+Always Design for Mobile First:
+
+/* For mobile phones: */
+[class*="col-"] {
+  width: 100%;
+}
+
+@media only screen and (min-width: 600px) {
+  /* For tablets: */
+  .col-s-1 {width: 8.33%;}
+  .col-s-2 {width: 16.66%;}
+  .col-s-3 {width: 25%;}
+  .col-s-4 {width: 33.33%;}
+  .col-s-5 {width: 41.66%;}
+  .col-s-6 {width: 50%;}
+  .col-s-7 {width: 58.33%;}
+  .col-s-8 {width: 66.66%;}
+  .col-s-9 {width: 75%;}
+  .col-s-10 {width: 83.33%;}
+  .col-s-11 {width: 91.66%;}
+  .col-s-12 {width: 100%;}
+}
+
+@media only screen and (min-width: 768px) {
+  /* For desktop: */
+  .col-1 {width: 8.33%;}
+  .col-2 {width: 16.66%;}
+  .col-3 {width: 25%;}
+  .col-4 {width: 33.33%;}
+  .col-5 {width: 41.66%;}
+  .col-6 {width: 50%;}
+  .col-7 {width: 58.33%;}
+  .col-8 {width: 66.66%;}
+  .col-9 {width: 75%;}
+  .col-10 {width: 83.33%;}
+  .col-11 {width: 91.66%;}
+  .col-12 {width: 100%;}
+}
+
+<div class="row">
+  <div class="col-3 col-s-3">...</div>
+  <div class="col-6 col-s-9">...</div>
+  <div class="col-3 col-s-12">...</div>
+</div>
+
+<link rel="stylesheet" media="screen and (max-width: 564px)" href="mobile.css">
+<link rel="stylesheet" media="screen and (max-width: 768px)" href="tablet.css">
+<link rel="stylesheet" media="screen and (max-width: 992px)" href="desktop.css">
+
+Typical Device Breakpoints:
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {...}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {...}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {...}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {...}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {...}
+
+Orientation: Portrait / Landscape:
+@media only screen and (orientation: landscape) {
+  body {
+    background-color: lightblue;
+  }
+}
+
+
+Change FontSize with media
+
+/* If the screen size is 601px or more, set the font-size of <div> to 80px */
+@media only screen and (min-width: 601px) {
+  div.example {
+    font-size: 80px;
+  }
+}
+
+/* If the screen size is 600px or less, set the font-size of <div> to 30px */
+@media only screen and (max-width: 600px) {
+  div.example {
+    font-size: 30px;
+  }
+}
+
+Responsive Image: (same for video tag)
+
+using width:
+If the width property is set to a percentage and the height property is set to "auto", the image will be responsive and scale up and down:
+img {
+  width: 100%;
+  height: auto;
+}
+problem: image can be scaled up more than its original size. use max-width
+
+using max-width: it never scale up to be larger than its original size:
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+Background images can also respond to resizing and scaling
+background-size: contain; # fits image, image keeps its aspect ratio
+background-size: cover; #scales to cover the entire content area, keep aspect ratio, crop some part
+background-size: 100% 100%; #bc image stretches to cover the entire content area
+
+
+#make a table responsive
+div{
+overflow-x:auto
+}

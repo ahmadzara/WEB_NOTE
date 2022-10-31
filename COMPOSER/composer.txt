@@ -1,0 +1,281 @@
+Install:
+
+1. download from https://getcomposer.org/download/
+2. run: php composer-setup.php
+
+_____________________________________________________________________
+
+quick commands:
+
+# composer version
+==> composer -V
+==> composer --version
+# composer help
+==> Composer -v
+# composer update
+==> Composer self-update
+==> Composer selfupdate
+==> php composer.phar self-update
+# rollback to your previous version
+==> composer self-update --rollback
+# which dependencies are installed
+==> php -m
+# php version
+==> php -v 
+
+_____________________________________________________________________
+
+"composer.json" describes the dependencies and other metadata.
+First thing to specify is the require key.
+{
+    "require": {
+        "monolog/monolog": "2.0.*"
+    }
+}
+it maps package names (e.g. monolog/monolog) to version constraints (e.g. 1.0.*).
+
+_____________________________________________________________________
+
+Version Constraints:
+(2.0.*) means any version in the 2.0 development branch,
+or any version that is greater than or equal to 2.0 and less than 2.1 (>=2.0 <2.1).
+
+_____________________________________________________________________
+
+Installing dependencies:
+==> php composer.phar update
+# resolves the updates when composer.json already exist
+==> php composer.phar install
+
+It resolves all dependencies listed in your composer.json file and writes all of the packages 
+and their exact versions to the composer.lock file, locking the project to those specific versions. 
+
+- commit the composer.lock file to your project repo so that all people working on the project are locked to the same versions of dependencies. 
+- update command runs the install command, this will download the dependencies' files into the vendor directory in your project. (do not change it).
+
+Tip: add vendor in your .gitignore.
+
+Every file in vendor has a composer.json which contains all data for that specific package.
+
+_____________________________________________________________________
+
+Autoloading:
+There's a file names (autoload.php) in vendor in which 
+if we (include/require this file in our php codes) it will include all packages in vendors.
+So there's no need to require each package individually! Which is a big advantage. 
+
+ou can even add your own code to the autoloader by adding an autoload field to composer.json.
+{
+    "autoload": {
+        "psr-4": {"Acme\\": "src/"}
+    }
+}
+
+After adding the autoload field, you have to re-run this command:
+==> php composer.phar dump-autoload
+# This command will re-generate the vendor/autoload.php
+
+
+In order to make that package installable 
+you need to give it a name. 
+You do this by adding the name property in composer.json:
+
+{
+    "name": "acme/hello-world",
+    "require": {
+        "monolog/monolog": "1.0.*"
+    }
+}
+project name: acme/hello-world, 
+acme:vendor name. (mandatory).
+
+_____________________________________________________________________
+
+Composer Commands:
+# see the full list
+==> composer or composer list
+# get indivisual help for each command
+==> composer --help licenses
+
+composer uses symfony/console, it will recognize commands by using their short name too.
+==> php composer.phar dump => composer dump-autoload
+
+create a composer.json using command:
+==> php composer.phar init
+
+The require command adds new packages to the composer.json file from the current directory.
+==> php composer.phar require
+After adding/changing the requirements, the modified requirements will be installed or updated.
+
+If you do not want to choose requirements interactively, you can pass them to the command.
+==> php composer.phar require "vendor/package:2.*" vendor/package2:dev-master
+
+remove packages:
+==> php composer.phar remove vendor/package vendor/package2
+
+status:
+--verbose option you get some more information about what was changed:
+==> php composer.phar status -v
+
+_____________________________________________________________________
+_____________________________________________________________________
+
+Composer in Laravel:
+
+How to install a composer package in laravel?
+
+==> composer require imanghafoori/laravel-heyman 
+- first is the username, second is the package name. 
+- it downloads it in packagist.com and updates the files in composer.json in laravel folder root directory.
+- It will also download(add if already exists) the file named (imanghafoori/laravel-terminator).
+why? Because laravel-heyman package use terminator as its dependencies so composer automatically adds it.
+- It automatically generates optimised autoload files in order to add these two files and autoloads it in our projects. (Saves the time)(files can be found in vendor).
+- Needless to worry about autoload.php because it's been required and called in public folder in index.php when laravel runs, all pachages will be loaded automatically.
+
+_____________________________________________________________________
+
+"Require":(important) (Includes a json in itself) Shows all dependencies of this project.
+"Require-dev": ... (difference?) (Only needed for developing the codes, not on the server.
+May also be hazardous if existed on server and especially is for hackers
+
+Autoload and autoload-dev difference is the same as above and is important.
+
+Scripts: (post is after and pre is before)
+Post-create-project-cmd
+Means runs this cmd after creating the project
+
+- composer autoloads its packages, what if we want all other folders gets autoloaded as well by composer. 
+- It doesn't do it automatically because it doesn't know what we're gonna do with our folders.
+- We need to declare our decision to composer which will be written in autoload part in composer.json in root folder.
+
+In autoload section, there is a psr-4 which is a standard and is case-sensitive)
+"App\\":"app/" or (app/ABC.php) 
+Means (App)is the class root namespace for all files and folders in app root laravel folder. 
+
+==> if a folder named nd in app , namespace will be like this
+\\ means \ seperator. \ alone means operator
+"App\\nd\\ABC":"app/nd/ABC.php"
+
+- In this way we're letting composer know it and it automatically loads it then
+- "Classmap": (less important, used when we don't want to put our classes in namespaces.
+- We tell composer not to load auto on server when put in Autoload-dev 
+
+_____________________________________________________________________
+
+Semantic(meaningful) versioning:
+
+Divided in 3 parts.
+(Major-Minor-patch) changes
+7.1.3 
+- Laravel/framework": "5.7.*" (Star means search for the last version in only 5.7 version like 5.7.9 not 5.8
+- "Php": "^7.1.3" (^ means 7.1.3 or higher versions, ^ declares minimum, locks the major part which is 7. Minor and patch have the freedom to change)
+- "Laravel-heyman": "~2.2" (Similar to ^ , locks the major part, keeps the minor and only lets patch change its number.)
+
+>2.7
+>2.7 <=3.5
+2.3.* =======》 >=2.3.0 <2.4
+2.0.0 - 3.0.0 =====》 >2 & <3
+ ~3.6 =======》 >-3.6 <4.0
+
+_____________________________________________________________________
+
+Composer downloading is slow and one by one, how to make them parallellably downloadable?
+
+==》 add a plugin
+
+==> Composer global require hirak/prestissimo
+
+_____________________________________________________________________
+
+Adding a project to composer autoload ==》
+
+(((Create a folder in root named myFile)))
+
+<?php
+ namespace App;
+ 
+ class class1
+  { 
+  public $name = __FILE__;
+   }
+(__FILE__ refers to the current file's position)
+
+In composer.json add it to the autoloud ==》
+
+{ 
+"name": "hitos/php_pro", 
+"require":
+ { 		
+ "silex/silex": "~2.0", 		
+ "twbs/bootstrap": "^3.3" 
+ 	},
+ 	"autoload" : 
+ 	{ "psr-4" :
+ 	 { "App\\" : "myFile/"} 	
+ 	   }
+ 	     }
+
+Run (composer dumpautoloud) in CMD to make new changes in vendor, make a index.php and set these codes in it.
+
+<?php 
+require 'vendor/autoload.php';
+ $class = new \App\class1();
+  echo $class->name;
+
+_____________________________________________________________________
+
+A simple project details to share in packagist.com ==》
+
+1)
+
+{ 
+"name": "hitosproject/hitos-application",
+ "description": "Hitos Application for Symfony",
+  "license": "BSD-3-Clause",
+  
+ "keywords":
+  [ "application", "symfony" ], 
+  
+"authors":
+ [ 
+ { "name": "Mahdi Musavi", "email": "mahdi@gmail.com" } 
+ ], 
+ 
+"homepage": "https://hitos.ir/", "require": {
+ "php": ">=5.3.3", 
+ "symfony/symfony": "2.8.*"
+  } 
+ }
+
+2)
+
+To make the above codes automatically run ==》
+composer init
+
+3) add the github url to the composer.json in order to familiarize it and its repository.
+
+{ 
+"name": "hitos/blog", "repositories":
+
+ [ 
+ { "type": "vcs", "url": "https://github.com/username/hello-world" } 
+ ],
+  "require":
+   { "acme/hello-world": "dev-master" }
+    }
+
+_____________________________________________________________________
+
+If composer.lock existed, (composer install) command ignores the composer.json and get all needed info from .lock
+
+For updating our versions we can't run composer install again, 
+because we don't want to get the info of latest versions, 
+instead we use (composer update) command which refers to 
+composer.json and reads each packages version
+And Download the new version of each.
+
+And update composer.lock content as well if already existed, if not it creates one.
+
+And we don't share the vendor folder itself, we share all contents except this one to another person, and with running composer install command they can get the vendor folder.
+
+

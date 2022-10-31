@@ -1,0 +1,731 @@
+Install)
+
+* using the global installer (installed once, used many times)
+==> 1. composer global require laravel/installer
+==> 2. laravel new example-app
+* create via composer create-project command
+==> composer create-project laravel/laravel example-app
+
+_______________________________________________________
+
+Artisan)
+
+* start Laravel's local development server using the Laravel's Artisan CLI serve command:
+=> php artisan serve
+to check out all artisan commands
+=> php artisan
+
+_______________________________________________________
+
+Controller)
+
+* make a controller
+=> php artisan make:controller [name]
+* pass the controller in the route
+=> Route::get('/users', 'App\Http\Controllers\[name]@index');
+* makes all necessory resource functions
+=> php artisan make:controller UserConttroller -r
+
+_______________________________________________________
+
+Migration)
+
+* create a table
+=> php artisan make:migration create_[name]_table
+* to run migrate
+=> php artisan migrate
+* refresh the default migration tables
+=> php artisan migrate:refresh
+* to drop/delete/rollback a table
+==> php artisan migrate:fresh | :rollback
+* to rollback n times
+==> php artisan migrate:rollback --step=n
+* to add another row after migration
+1. rollback once, add table, migrate next.
+2. php artisan make:migration add_user_id_to_posts
+* it will be added as the last row of the table
+=> $table->integer('user_id');
+* how to put it after a specific row?
+=> $table->integer('user_id')->after('id');
+* then we need to add a foreign key to connect both tables
+=> $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
+* we cannot use php artisan migrate, we need to rollback once and use migrate
+php artisan migrate:rollback
+php artisan migrate
+* note: Since increments() creates an unsigned integer column, use unsignedBigInteger() for id since it uses bigIncrements()
+
+* if any errors occurs during running php artisan migrate we need to go to app/providers/appserviceprovider, => use Illuminate\Support\Facades\Schema; and add to the boot method =>
+ public function boot()
+    {
+        Schema::defaultStringLength(191);
+    }
+
+_______________________________________________________
+
+Pagination)
+
+=> use Illuminate\Pagination\Paginator;
+* in app/providers/appServiceProvider.php
+
+  public function boot()
+    {
+        Paginator::useBootstrap();
+    }
+
+* use it in view
+ {{$users->links()}}
+
+* how to override pagination from vendor? do not change the vendor itself!!!!
+==> php artisan vendor:publish --tag=laravel-pagination
+* it makes all pagination class in a folder named vendor/pagination
+==> {{$posts->onEachSide(5)->links('vendor.pagination.bootstrap-5')}}
+* or anything you want to add => default/semantic-ui ...
+
+_______________________________________________________
+
+* to connect to the database and do some actions use:
+1. Query Builder
+
+in controller/function
+Illuminate\Support\Facades\DB;
+public function index(){
+$title = "Welcome to my blog";
+$posts = DB::table('posts')->get(); // select * from users
+=> $postcounts = DB::table('posts')->count();
+=> $posts = DB::table('posts')->orderBy('id','DESC')->get(['id', 'title', 'description']);
+=> $posts = DB::table('posts')->where('id', 6)->get();
+=> $posts = DB::table('posts')->where('id',"<>", 6)->get();
+=> $posts = DB::table('posts')->orderBy('id','DESC')->paginate(1);
+return view('posts',compact('title','posts'));
+}
+
+2. Eloquent ORM
+* it uses the model to get the info from database
+* use model to fetch table queries
+==> use App\Models\Order;
+==> $orders = Order::orderBy('id', 'desc')->get();
+* and done! fewer code
+
+______________________________________________________
+
+CRUD)
+
+* create model, migration, factory, seed, request, policy and controller at the same time
+==> php artisan make:model Category -a 
+
+* CRUD routes
+Route::get('/categories', 'App\Http\Controllers\CategoryController@index')->name('categories.index');
+Route::get('/categories/{category}', 'App\Http\Controllers\CategoryController@show')->name('categories.show');
+Route::get('/categories/create', 'App\Http\Controllers\CategoryController@create')->name('categories.create');
+Route::get('/categories/edit/{category}', 'App\Http\Controllers\CategoryController@edit')->name('categories.edit');
+Route::get('/categories/destroy/{category}', 'App\Http\Controllers\CategoryController@destroy')->name('categories.destroy');
+Route::post('/categories/store', 'App\Http\Controllers\CategoryController@store')->name('categories.store');
+Route::put('/categories/update/{category}', 'App\Http\Controllers\CategoryController@update')->name('categories.update');
+
+_________________________________________________________
+
+Validation)
+
+* put @csrf for form security, have a $fillable in the model.
+
+* in controller
+ $validated = $request->validated([
+        'name' => 'required|unique:categories|max:255',
+        'description' => 'required',
+    ]);
+* in view for each input
+@error('title')
+  <div class="alert alert-danger">{{ $message }}</div>
+@enderror
+* add this to each input class
+class="form-control @error('title') is-invalid @enderror"
+
+* Validation Rules can be specified in StoreRequest rather than the controller
+ public function rules()
+    {
+        return [
+            'title' => 'required|unique:categories|max:255',
+            'description' => 'required',
+        ];
+    }
+* Show Errors:
+@if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+@endif
+
+* it's better to use @include to add this code in pages we want
+@include('layouts.errors')
+* shows a message after category created using session
+return redirect('/categories')->with('success', $msg);
+@if (session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
+* the method we use for update form is PUT but we cannot give it to the html directly so we use blade @method to put.
+
+______________________________________________________________
+
+Authentication)
+
+* this will add all authentification routes automatically
+==> Auth::routes();
+* to add verify to it
+==> Auth::routes(['verify' => true]);
+Route::get('/profile/{user}', 'UserController@edit')->name('profile')->middleware(['auth', 'verified']);
+* in user.php
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+* must be implemented in order to use
+class User extends Authenticatable implements MustVerifyEmail
+{ ....
+* in order to use this route ==>
+Step 1: (Install Laravel UI)
+==> composer require laravel/ui
+Step 2: (Generate Auth UI)
+==> php artisan ui bootstrap --auth
+==> php artisan ui vue --auth
+* this runs a middleware to let only authenticated users access categories
+==> Route::get('/categories', 'App\Http\Controllers\CategoryController@index')->name('categories.index')->middleware('auth');
+
+* 3 ways to verify authorization
+
+@auth
+@endauth
+
+@guest
+@endguest
+
+@if(1auth::guest())
+@else
+@endif
+
+
+* to authenticate admin, adding middleware('auth') is not okay, everyone can have access, so we make another middleware named CheckRole to check the role in user table and get access if it's admin.
+
+public function handle(Request $request, Closure $next)
+    {
+        if (auth()->check() && auth()->user()->role == 1) {
+            return $next($request);
+        }
+        return redirect(route('login'));
+    }
+
+* middleware must be registered in kernal.php in order to be used in protected $routemiddleware
+==> 'admin' => \App\Http\Middleware\CheckRole::class,
+
+
+* installing laravel/fortify instead of laravel/ui
+==> composer require laravel/fortify
+==> php artisan vendor:publish --provider="Laravel\Fortify\FortifyServiceProvider"
+==> php artisan migrate
+* adding to app.php
+==> App\Providers\FortifyServiceProvider::class,
+
+* how to override login and register views in fortify?
+* Providers/FortigySericeProvider, in boot method add => 
+Fortify::loginView(function () {
+            return view('auth.login');
+        });
+Fortify::registerView(function () {
+            return view('auth.register');
+        });
+Fortify::requestPasswordResetLinkView(function () {
+            return view('auth.forgot-password');
+        });
+Fortify::verifyEmailView(function () {
+            return view('auth.verify-email');
+        });
+
+* there is no need to use Auth::routes() , fortify take care of the rest
+
+* how to add username instead of email in fortify?
+1. add $table->string('username')->unique in user table
+2. php artisan migrate:refresh
+3. add username input in view
+<div class="form-group row">
+    <label for="username" class="col-md-4 col-form-label text-md-right">{{ __('Username') }}</label>
+    <div class="col-md-6">
+    <input id="username" type="text" class="form-control @error('username') is-invalid @enderror"
+    name="username" value="{{ old('username') }}" required autocomplete="username" autofocus>
+
+    @error('username')
+    <span class="invalid-feedback" role="alert">
+    <strong>{{ $message }}</strong>
+    </span>
+    @enderror
+    </div>
+</div>
+4. add username in make & create method in app/Action/Fortify/CreateNewUser
+==>
+   public function create(array $input)
+    {
+        Validator::make($input, [
+            'name' => ['required', 'string', 'max:255'],
+            'username' => [
+                'required',
+                'string',
+                'max:255',
+                'unique:users',
+            ],
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique(User::class),
+            ],
+            'password' => $this->passwordRules(),
+        ])->validate();
+
+        return User::create([
+            'name' => $input['name'],
+            'username' => $input['username'],
+            'email' => $input['email'],
+            'password' => Hash::make($input['password']),
+        ]);
+    }
+5. add username to $fillable in User::class
+6. how to let fortify know username is not email anymore in login?
+* go to config/fortify.php and change
+'username' => 'email', to 'username' => 'username',
+
+* how to secure password in fortify?
+in App/Action/Fortify/PasswordValidationRules =>
+  protected function passwordRules()
+    {
+        return ['required', 'string',
+        (new Password)
+        ->requireNumeric()
+        ->requireUppercase()
+        ->requireSpecialCharacter()
+        , 'confirmed'];
+    }
+
+* how to pass values in the form from front to back with fortify?
+* installing bootstrap framework for fortify(optional)=>
+==> npm i bootstrap jquery popper.js sass sass-loader
+* add this to resources/js/bootstrap.js to enable jquery and popper
+==> 
+try {
+    window.Popper = require('popper.js').default;
+    window.$ = window.jQuery = require('jquery');
+
+    require('bootstrap');
+} catch (e) {}
+
+in sass => // Bootstrap
+@import '~bootstrap/scss/bootstrap';
+in webpack =>
+mix.js('resources/js/app.js', 'public/js')
+    .sass('resources/sass/app.scss', 'public/css');
+
+_______________________________________________________
+
+Partials)
+
+* @include imports the contents of a seperate file into the current file location
+==> @include('include.file_name')
+
+* @extend | @section | @yield
+* @yield imports code from a "section" in the child file
+==> @yield('needed_section_name')
+* Child View:
+==> 
+@extends('layout.file_name')
+@section('needed_section_name')
+< some cool code here >
+@stop
+
+* @push | @stack:
+* index.blade.php:
+==> @stack('custom-scripts')
+* Child view:
+@push('custom-scripts')
+    <script type="text/javascript" src="{{ URL::asset ('js/custom-scripts.js') }}"></script>
+@endpush
+
+_________________________________________________________________
+
+Override)
+
+* if you want to define default values in Model rather than in the migration add:
+  protected $attributes = [
+        //'name' => 'value',
+        'status' => '1',
+    ];
+
+_______________________________________________________
+
+Relationships)
+
+* manyToMany relationship needs a helper table called pivot.
+* pivot table for article & category table is
+==> php artisan mkae:migration create_article_category_table
+
+* blongsToMany in article model
+   public function categories()
+    {
+        return $this->belongsToMany(Category::class);
+    }
+* in category model
+  public function articles()
+    {
+       return $this->belongsToMany(Article::class);
+   }
+* now we can easily access categories in article 
+* in articleController/create method
+$categories = Category::all(); return $categories;
+* it fetches all categories info from databse
+* to only get name and id we use plunk()
+public function create()
+    {
+        $categories = Category::all()->pluck('name', 'id');
+        return view('admin.articles.create', compact('categories'));
+    }
+* article.php | one article can only have one author, and an author can have multiple articles
+ public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+* user.php | to see how many articles a user has
+public funtion articles(){
+  return $this->belongsToMany(ARticle::class);
+}
+
+_________________________________________________________
+
+Email)
+
+* to test email on localhost we use a fake smtp website like mailtrap
+1. make an account
+2. apply smtp config to .env
+
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=6de50af93854f7
+MAIL_PASSWORD=b0cebcb8835a20
+MAIL_ENCRYPTION=tls
+
+* or add it in config/mail.php
+
+* how to use)
+==> php artisan make:mail <name>
+
+public function build(){
+* to override the set email in config/mail.php
+  return $this->from('no-reply@echo.test')
+              ->view('mail.commentMail');
+}
+etc...
+
+* how to send)
+Mail::to($request->email)
+     ->send(new CommentSent($request, $article));
+
+_____________________________________________________
+
+Storage)
+
+* stores image in storage folder (storage/app/images/file.png)
+==> $request->image->storeAs('images', $imageName);
+* stores image in public folder (public/app/images/file.png)
+==> $request->image->move(public_path('images'), $imageName);
+* always use file('') to imply and validate image to be a file
+==> $request->file('image')->storeAs('images', $imageName);
+==> $request->file('image')->store('images', 'public');
+
+* makes a shortcut of the storage/images into public/images
+==> php artisan storage:link
+
+* set storage url for image to be showen
+1. <img style="margin-top:15px;max-height:100px;" src="/storage/{{$article->image}}">
+2. <img style="margin-top:15px;max-height:100px;" src="{{\Storage::url($article->image)}}">
+          
+* we can also make an atttribute in model to use it globally
+   public function getImageUrlAttribute()
+   {
+       return \Storage::url($this->image);
+   }
+* add use in the view
+$article->imageUrl;
+                    
+* save if uplaoded, don't touch if not updated
+'image' => $request->file('image') ? $request->image->store('images', 'public') : $article->image,
+
+_______________________________________________________________
+
+Traits)
+
+Slug)
+
+'slug' => \Str::slug($request->name),
+use Str;
+
+* add \ before trait or use them in head
+
+* to send slug as the parameter to use it in view
+Route::get('/articles/{article:slug}', 'App\Http\Controllers\ArticleController@show')->name('article');
+Route::post('/comment/{article:slug}', 'App\Http\Controllers\CommentController@store')->name('comment.store');
+
+
+
+Log)
+
+catch(Exception $exception){
+            \Log::error($exception->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong: ' . $exception->getMessage());
+        }
+* add log, and show error message
+
+_________________________________________________________
+
+Factory)
+
+* how to create dummy data using factory?
+* we can even create factory seperately
+==> php artisan make:factory --help
+==> php artisan make:factory ArticleFactory --model=Article
+* after creating the table with migration, we can pass
+protected $fillable = ['title', 'description'];
+* to our model and call
+==> protected $model = \App\Models\Category::class;
+* in category factory, then we add this:
+public function definition()
+    {
+        return [
+            'title' => $this->faker->title,
+            'description' => $this->faker->text,
+        ];
+    }
+* then we use artisan tinker which allows you to interact with your entire Laravel application on the command line, including your Eloquent models, jobs, events, and more.
+==> php artisan tinker
+==> Category::factory()->count(20)->create()
+
+* for user
+==> App\Models\User::factory()->count(5)->create()
+* die and dump to get info when called
+==> dd($category);
+
+
+Seed)
+
+==> php artisan make:seeder --help
+==> php artisan make:seeder ArticleTableSeeder
+==> php artisan db:seed 
+* deletes and seeds the table
+==> php artisan migrate:fresh --seed
+
+_______________________________________________________
+
+Session)
+
+* Sessions => config/sessions.php
+* 'driver' => env('SESSION_DRIVER', 'file'),
+* supported drivers: "file", "cookie", "database", "apc", "memcached", "redis", "dynamodb", "array"
+* files will be stored in storage/framework/session/...
+
+* stores required session info in a table.
+==> php artisan session:table
+* session default values in .env
+SESSION_DRIVER=file
+SESSION_LIFETIME=120
+
+* how to create a session?
+- in controller => 
+  public function page1()
+    {
+        * method 1
+        session()->put('name' , 'Echocademy');
+        * method 2
+        session(['name' => 'echo']);
+        return 'Echocademy';
+    }
+* then we wanna get the name in page2
+    public function page2()
+    {
+        $session = session()->get('name');
+        $session = session('name');
+        dd($session);
+    }
+
+Methods)
+
+    public function page1()
+    {
+        session()->put([
+            'name' => 'Lorem',
+            'title' => 'Lorem ipsum'
+        ]);
+
+        session(['name' => 'Lorem', 'title' => 'Lorem ipsum']);
+
+        session()->flash('name' ,'echo.ca');
+        session()->flash('title' ,'Lorem ipsum Flash');
+
+        return 'echo.ca';
+    }
+
+    public function page2()
+    {
+        $name = session()->get('name');
+
+        $name = session('name');
+        dd($name);
+
+        $session = session()->all();
+        dd($session); 
+     }
+
+_______________________________________________________
+
+Cache)
+
+* boosts website speed
+* saves long queries in cache to load website faster
+
+* config/cache.php
+* Supported drivers: "apc", "array", "database", "file","memcached", "redis", "dynamodb", "null"
+
+==>'default' => env('CACHE_DRIVER', 'file'),
+==>CACHE_DRIVER=file
+
+==> php artisan cache:forget/clear/table
+
+* FILES refers to storage/framework/cache/data
+
+* how to make a cache in a controller?
+==> use illuminate\Support\Facades\Cache;
+* time is the expired time by seconds
+==> Cache::put('key','value','time');
+return ...;
+
+* DELETE YOUR CACHE BEFORE UPLOADING YOUR WEBSITE
+* optimize:clear! removes the cached bootsreap files
+* php artisan => view/event/route/config:cache & :clear
+
+* we can change user logged in session in env file =>
+SESSION_LIFETIME=120 
+* to declare how long user logged info can be saved by sessions
+
+______________________________________________________
+
+Packages)
+
+Google Recaptcha)
+
+* composer require biscolab/laravel-recaptcha
+* config/app.php
+'providers' => [
+    ...
+    Biscolab\ReCaptcha\ReCaptchaServiceProvider::class,
+];
+'aliases' => [
+    ...
+    'ReCaptcha' => Biscolab\ReCaptcha\Facades\ReCaptcha::class,
+];
+* Create config/recaptcha.php
+==> php artisan vendor:publish --provider="Biscolab\ReCaptcha\ReCaptchaServiceProvider"
+* go to https://www.google.com/recaptcha/ paste the keys to .env
+* .env file
+RECAPTCHA_SITE_KEY=<YOUR_API_SITE_KEY>
+RECAPTCHA_SECRET_KEY=<YOUR_API_SECRET_KEY>
+RECAPTCHA_SKIP_IP=<YOUR_IP_LIST>
+* you can either add site and secret key in .env or recapcha config directly
+
+* add this code in head
+{!! htmlScriptTagJsApi(['lang'=>'en']) !!}
+* add this in view
+<div class="form-group">
+        <label for="recaprcha">Security Image</label>
+        {!! htmlFormSnippet() !!}
+</div>
+
+
+Google | Github )
+* registering with social media with socialite pachakge
+==> composer require laravel/socialite
+* app.php
+'aliases' => [
+    'Socialite' => Laravel\Socialite\Facades\Socialite::class,
+],
+'providers' => [
+    Laravel\Socialite\SocialiteServiceProvider::class,
+],
+* services.php
+'google' => [
+            'client_id'     => env('GOOGLE_CLIENT_ID'),
+            'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+            'redirect'      => env('GOOGLE_URL')
+],
+* .env
+GOOGLE_CLIENT_ID=314433566338-s0n1f75uadmn9j0em7drhcaovimam7e5.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=_s8nBMNvXvKd7W6RaTf_5MDB
+GOOGLE_URL= 'http://localhost:8000/login/google/callback'
+
+* go to =>https://console.cloud.google.com/apis/credentials/ to make google_client_id
+
+* google
+==> secret_id => _s8nBMNvXvKd7W6RaTf_5MDB
+==> client_id => 314433566338-s0n1f75uadmn9j0em7drhcaovimam7e5.apps.googleusercontent.com
+* github
+==> client_id => 8b135d17f0ce34c01d96
+==> secret_id => d903897e3a1143979f29038036f77fb22dcac5cb
+
+* install to work with google api's
+==> composer require google/apiclient:"^2.7"
+
+
+Laravel Debugger)
+ 
+* https://github.com/barryvdh/laravel-debugbar
+==> composer require barryvdh/laravel-debugbar --dev
+
+_______________________________________________________
+
+* how to use swal sweetalert =>
+@if (Session::has('status'))
+<script>
+  swal({
+  title: "{{ session('status') }}",
+  text: "User Updated Successfully!",
+  icon: "success",
+  button: "OK",
+});
+</script>
+@endif
+
+* in controller
+$request->session()->flash('status','!');
+$request->session()->flash('status','!');
+$request->session()->flash('status','!');
+
+_____________________________________________________
+
+
+* this is how to change error pages
+==> php artisan vendor:publish --tag=laravel-errors
+
+
+* to enable coming soon page
+==> php artisan down --render="errors::comingSoon"
+* maintenance mode bypass secret key
+==> php artisan down --secret="AZCwzKU4bCsQuT7fCccEM2"
+
+_______________________________________________________
+
+To do)
+
+- @gate | @policy for user authentication
+- @components
+- Event Listener
+- Errors and Exceptions
+- Laravel Notification
+

@@ -1,0 +1,36 @@
+* delete logs ==> echo "" > storage/logs/laravel.log
+* remove ==> node_modules.
+* run ==> npm install & composer install --no-dev
+* .env file) APP_ENV=production // APP_DEBUG=false
+* composer dump-autoload --optimize
+along install) composer install --optimize-autoloader --no-dev
+uring update) composer update --optimize-autoloader
+* Optimizing Configuration Loading:
+php artisan config:cache & php artisan config:clear
+* Optimizing Route Loading
+php artisan route:cache & php artisan route:clear
+* Compile all of the application's Blade templates: 
+php artisan view:cache
+* Cache the framework bootstrap files:
+php artisan optimize
+* (Optional) Compiling assets (docs):
+npm run production
+* php artisan key:generate
+
+==================================================================
+
+laravel shared hosting deploy steps)
+
+bind directorty in index.php ==>
+$app->bind('path.public',function(){
+return __DIR__;
+});
+
+============================================
+
+after installing ssl, add these codes in 
+.htaccess to redirect all urls to https
+
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]

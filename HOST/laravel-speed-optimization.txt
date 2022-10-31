@@ -1,0 +1,17 @@
+Increase Laravel Website Speed)
+* HTML minification
+//example in echo middleware
+* Route Catching
+php artisan route:clear
+php artisan route:cache
+* Configuration Caching
+php artisan config:clear
+php artisan config:cache
+* Query Caching
+(to prevent requests from overvisiting an
+article by users and store it in session)
+* minify js & css
+* Optimize Images
+* with eager loading using with() in requests
+* Using a CDN
+* htaccess optimization

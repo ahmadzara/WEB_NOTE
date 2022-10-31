@@ -1,0 +1,39 @@
+The Flexbox Layout (Flexible Box) module aims at providing a more efficient way to lay out, 
+align and distribute space among items in a container, 
+even when their size is unknown and/or dynamic (thus the word “flex”).
+
+# apply to the parent container
+display: flex;
+# change the direction
+flex-direction: row | row-reverse | column | column-reverse;
+# wrap at the end
+flex-wrap: wrap | nowrap | wrap-reverse;
+# shorthand for direction and wrap
+flex-flow: row wrap;
+# align items horizontally
+justify-content: center | flex-start | flex-end | space-around | space-between | space-evenly;
+# align items vertically
+align-items: center | flex-start | flex-end | stretch | baseline;
+# to align items at the center at both sides
+align-items: center;
+justify-content: center;
+# to align the flex lines vertically altogether
+align-content: center | space-around | space-between | stretch | flex-start | flex-end;
+# change the order
+<div style="order: 3">1</div>
+# shows how much a flex item will grow relatively, default=0
+<div style="flex-grow: 1">1</div>
+<div style="flex-grow: 8">2</div>
+# shows how much a flex item will shrink relatively, default=1, negative=invalid
+<div>1</div>
+<div style="flex-shrink: 0">2</div>
+# shows the initial length of a flex item, default=auto
+<div style="flex-basis: 200px">1</div>
+# short-hand for flex grow-shrink-basis, (flex-shrink and flex-basis) are optional, default=0,1,auto
+# not growable (0), not shrinkable (0), length of 200 pixels:
+<div style="flex: 0 0 200px">3</div>
+flex: 2 2 10%;
+flex: auto; = flex: 1 1 auto.
+flex: none; = flex: 0 0 auto
+# aligns only the selected item
+algn-self: center | flex-start | flex-end,

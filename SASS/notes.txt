@@ -1,0 +1,197 @@
+Variables:
+$primary-color: lightgreen;
+$secondary-color: lightseagreen;
+$dark-color: #000;
+$light-color: rgb(211, 188, 188);
+$font-family: 'Courier New', Courier, monospace;
+
+
+@mixin name {
+  property: value;
+  property: value;
+  ...
+}
+selector {
+  @include mixin-name;
+}
+
+
+
+Nesting:
+.file{
+    h3{
+        color: $primary-color;
+        span{
+            font-size: 30px;
+            i{
+                padding-left: 5px;
+                text-decoration: line-through;
+            }
+        }
+    }
+    a{
+        text-decoration: none;
+        &:hover{
+            font-size: 20px;
+        }
+    }
+    & .file-01{
+        background-color: $light-color;
+        padding: 20px;
+    }
+    & .file-02{
+        font:{
+            family: sans-serif;
+            size: 28px;
+            weight:bolder;
+        }
+        text:{
+            align: center;
+            transform: uppercase;
+            overflow: hidden;
+        }
+    }
+}
+
+
+@import 'reset';
+@import 'variable';
+
+_reset.scss ==>
+html,
+body,
+ol,
+ul{
+    margin: 0;
+    padding: 0;
+}
+
+
+color functions
+
+//* background-color: lighten($color: , $amount: );
+//* background-color: darken($color: , $amount: );
+//* background-color: transparentize($color: , $amount: );
+//* background-color: mix( , );
+    // color: $danger-color;
+    // color: lighten($color: $danger-color, $amount: 20);
+    // color: darken($color: $warning-color, $amount: 30);
+    // color: transparentize($color: $pretty-color, $amount: 0.4);
+    color: mix($warning-color,$pretty-color,20%);
+
+
+// @function name(){
+//     .........
+//     @return ...;
+// }
+
+
+@function doubleFontSize($fz){
+    @return $fz * 2;
+}
+
+
+@function check-color($cl){
+    @if(lightness($cl) > 60){
+        @return #000;
+    }
+    @else{
+        @return #fff;
+    }
+}
+
+
+@mixin border($width:5px,$color:$warning-color){
+    border: $width solid $color;
+}
+
+@include border(7px); #override
+
+
+@mixin transform($property){
+    -webkit-transform: $property;
+    -moz-transform: $property;
+    -o-transform: $property;
+    transform: $property;
+}
+
+
+  %btn{
+    @include border(7px);
+    padding: 20px;
+    display: inline-block;
+  }
+
+  .btn-warning{
+    @extend %btn;
+    background-color: $light-color;
+  }
+
+
+// interpolation
+
+$b: 'border';
+$c: 'color';
+
+h2{
+  box-sizing: #{$b}-box;
+  #{$b}: 2px solid red;
+  background-#{$c}: blue;
+  #{$c}: aqua;
+}
+
+
+map-get(map, key)	
+$font-sizes: ("small": 12px, "normal": 18px, "large": 24px)
+map-get($font-sizes, "small")
+Result: 12px
+
+$colors:(
+  primary: purple,
+  secondary: blue,
+  tertiarty: aqua,
+);
+
+h1{
+  color: map-get($map: $colors, $key: tertiprarty);
+}
+
+
+<p class="paragraph-red">paragraph-red</p>
+<p class="paragraph-blue">paragraph-blue</p>
+<p class="paragraph-brown">paragraph-brown</p>
+<p class="paragraph-purple">paragraph-purple</p>
+<p class="paragraph-aqua">paragraph-aqua</p>
+$c: 'color';
+$colors:(
+  1: red,
+  2: blue,
+  3: brown,
+  4: purple,
+  5: aqua
+);
+
+// @for $c from 1 to 5{
+@for $c from 1 through 5{
+  .paragraph-#{$c}{
+    background-color: map-get($map: $colors, $key: $c);
+  }
+}
+
+
+$eachColors: red blue brown purple aqua;
+
+@each $c in $eachColors {
+  .paragraph-#{$c}{
+    @if ($c == green) {
+      background-color: #ffff33;
+    }
+    @else if($c == aqua){
+      background-color: rgb(255, 127, 217);
+    }
+    @else{
+      background-color: $c;
+    }
+  }
+}
+

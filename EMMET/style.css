@@ -1,0 +1,107 @@
+.item{
+    /* m10 == m:10 */
+    margin: 10px;
+
+    /* m30x */
+    margin: 30ex;
+
+    /* m40e */
+    margin: 40em;
+
+    /* m:a */
+    margin: auto;
+
+    /* m10px20px30px40px */
+    margin: 10px 20px 30px 40px;
+
+    /* p10 == p:10 */
+    padding: 10px;
+
+    /* p30p40x50e60rem */
+    padding: 30% 40ex 50em 60rem;
+
+    /* p:a */
+    padding: auto;
+
+    /* pt, pr, pb, pl */
+    /* mt, mr, mb ,ml */
+
+    /* pr30p */
+    padding-right: 30%;
+
+    /* ! color */
+
+    color: #000;
+    color: #111;
+    color: #fc0;
+    color: #f0f0f0;
+    color: #333;
+
+    /* h10 == h:10 */
+    height: 10px;
+
+    /* w10 == w:10 */
+    width: 10px;
+
+    /* fs */
+    font-style: italic;
+
+    /* fz20rem */
+    font-size: 20rem;
+
+    /* ff */
+    font-family: Iransens;
+
+    /* fw */
+    font-weight: normal;
+
+    /* d */
+    display: block;
+
+    /* d:f */
+    display: flex;
+
+    /* d:ib */
+    display: inline-block;
+
+   /* d:i */
+   display: inline;
+
+   /* bd */
+   border: 1px solid #000;
+
+   /* bdrs20px */
+   border-radius: 20px;
+
+   /* bdt */
+   border-top: 1px solid #000;
+
+   /* ai:b */
+   align-items: baseline;
+
+   /* @f */
+   @font-face {
+       font-family: ;
+       src: url();
+   }
+
+   /* @k */
+   @keyframes identifier {
+
+   }
+
+   /* @m */
+   @media screen {
+
+   }
+
+   /* m10! */
+   margin: 10px !important;
+
+   /* lg */
+   background-image: linear-gradient();
+
+   /* bsh */
+   box-shadow: inset hoff voff blur #000;
+
+}
