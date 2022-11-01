@@ -1,0 +1,500 @@
+VueJS - Install)
+
+1. CDN
+2. Using NPM 
+==> npm  install vue
+3. Using CLI Command Line
+==> npm install --global vue-cli
+==> vue init webpack myproject
+==> cd myproject | npm install | npm run dev
+4. Using the GUI
+==> vue create [name]
+==> vue create --help
+==> vue ui
+
+* install "Vue.js devtools" chrome extension, inspect your element, a Vue section has been added which you can use as a helper.
+
+____________________________________________________________
+
+Syntax)
+
+var app = new Vue({
+   // options
+})
+
+_______________________________________________________
+
+data and its source of truth)
+
+<div id="app">
+
+<input type="text" v-model="greeting">
+<h1>{{ greeting }} ({{ greeting.length }})</h1>
+
+</div>
+
+const app = Vue.createApp({
+    data() {
+        return {
+            greeting: 'Hello Vue!',
+        }
+    }
+}).mount("#app");
+
+_________________________________________________________
+
+using method()
+
+<div id="app">
+    <h1>Firstname : {{firstName}}</h1>
+    <h1>Lastname : {{lastName}}</h1>
+    <h3>{{ fullName() }}</h3>
+</div>
+
+<script>
+    const app = Vue.createApp({
+        data() {
+            return {
+                firstName: 'Ahmad',
+                lastName: 'Zare'
+            }
+        },
+        methods: {
+            fullName() {
+                return this.firstName + ' ' + this.lastName;
+            }
+        }
+    }).mount("#app");
+</script>
+
+_______________________________________________________
+
+toggle button text color)
+
+1st way:
+style)
+ .text-red{
+      color:red;
+    }
+  .text-green{
+      color:green;
+   }
+html)
+<button :class="color" @click="changeColor">click me</button>
+data) 
+color: 'text-green'
+method)
+changeColor() {
+     this.color = this.color === 'text-green' ? 'text-red' : 'text-green'
+}
+
+2nd way:
+<button :class="active ? 'text-red' : 'text-green'" @click="toggle">click me</button>
+active: false
+toggle(){
+        this.active = !this.active;
+}
+________________________________________________________
+
+using mounted()
+* automatically fires when page loads
+mounted() {
+      setTimeout(() => {
+        this.greeting = 'Changed!!!'
+      }, 3000)
+}
+
+________________________________________________________
+
+v-for)
+
+ <section v-show="inprogressAssignment.length">
+        <h2>In progress:</h2>
+        <ul>
+          <li v-for="assignment in inprogressAssignment" :key="assignment.id">
+            <label>
+              {{assignment.name}}
+              <input type="checkbox" v-model="assignment.completed">
+            </label>
+          </li>
+        </ul>
+      </section>
+
+      <section v-show="completedAssignment.length">
+        <h2>Completed:</h2>
+        <ul>
+          <li v-for="assignment in completedAssignment" :key="assignment.id">
+            <label>
+              {{assignment.name}}
+              <input type="checkbox" v-model="assignment.completed">
+            </label>
+          </li>
+        </ul>
+      </section>
+
+ assignments: [
+            {id: 1, name: 'Assignment 1', completed: false},
+            {id: 2, name: 'Assignment 2', completed: true},
+            {id: 3, name: 'Assignment 3', completed: false},
+            {id: 4, name: 'Assignment 4', completed: false},
+]
+* we use computed to have a DRY code
+computed: {
+      completedAssignment() {
+        return this.assignments.filter(assignment => assignment.completed)
+      },
+      inprogressAssignment(){
+        return this.assignments.filter(assignment => !assignment.completed)
+      }
+    }
+________________________________________________________
+
+Events) v-on | @
+
+* we want to add to our todo list using a submit form
+* when we click on input form submits the data and page refreshes
+* to prevent refereshing the page, we can pass a parameter to method "e" and use e.preventDefault() or add prevent to form event ==> @submit.prevent=""
+
+<section>
+        <form @submit.prevent="addAssignment" class="form-control">
+          <h5>Add new assignment:</h5>
+          <input class="text-muted" type="text" v-model="newAssignment" placeholder="New Assignment...">
+          <button class="btn btn-secondary" type="submit">Add</button>
+        </form>
+</section>
+
+newAssignment: '' * in data()
+
+ method:{
+        addAssignment(){
+          this.assignments.push({
+            id: this.assignments.length + 1,
+            name: this.newAssignment,
+            completed: false
+          });
+          this.newAssignment = '';
+        }
+}
+
+
+
+
+
+
+styleobj : {
+     width:"100px",
+     height:"50px",
+     backgroundColor:"red"
+}
+<div v-bind:style = "styleobj" v-on:mouseover = "changebgcolor" v-on:mouseout = "originalcolor"></div> -->
+* shorthand
+<div :style = "styleobj" @mouseover = "changebgcolor" @mouseout = "originalcolor">Event Handling</div>
+
+changebgcolor : function() {
+      this.styleobj.backgroundColor = "green";
+   },
+originalcolor : function() {
+       this.styleobj.backgroundColor = "red";
+}
+
+Event Modifiers)
+
+* .once ==> let event executes only oncev
+<button v-on:click.once = "buttonclicked">Click Once</button>
+* .prevent ==> prevents to open the link
+<a href = "http://www.google.com" v-on:click.prevent = "clickme">Click Me</a>
+
+Event Key Modifiers) V-on.eventname.keyname
+* runs onlu we press enter
+<input type = "text"  v-on:keyup.enter = "showinputvalue"/>
+name: ''
+<input type = "text" v-on:keyup.enter = "showinputvalue" placeholder = "Enter your name"/>
+<h3> {{name}}</h3>
+showinputvalue : function(event) {
+     this.name=event.target.value;
+}
+* using multiple
+==> V-on.keyup.ctrl.enter
+
+____________________________________________________________
+
+Template)
+
+htmlcontent : "<div><h1>Vue Js Template</h1></div>"
+<div v-html = "htmlcontent"></div>
+* v-html directive must be used to let vue reading it
+
+__________________________________________________________
+
+Bind Attributes)
+
+<img src="{{ image }}" alt="" width="200" height="200">
+image: "https://picsum.photos/200/300"
+
+* v-bind must be added to assign any attributes to html tag
+<img v-bind:src="image" alt="" width="200" height="200">
+
+__________________________________________________________
+
+Components)
+
+* inline components)
+
+* we can reuse the template over and over again
+<div id="app">
+      <my-component></my-component>
+</div>
+components: {
+        'my-component': {
+          template:
+            `
+            <button class="btn btn-primary">Click me</button>
+            `,
+            mounted() {
+              alert('component working')
+            },
+        }
+ }
+
+* if we want to override text in template we use <slot>
+<my-component>Submit</my-component>
+<button class="btn btn-primary"><slot></button>
+
+
+* seperate component file)
+* we make a seperate file and use ==> export default to export the component as an object in the js module file
+
+export default {
+  template:
+    `
+      <button class="btn btn-primary">
+          <slot>
+      </button>
+    `,
+    data() {
+      return {
+
+      }
+    }
+}
+
+* now we need to import the component module in main page.
+==> import myComponent from './js/components/myComponent.js'
+* now we refrence it in data()
+==>  components: {
+        'my-component' : myComponent
+      }
+<div id="app">
+      <my-component>Submit</my-component>
+</div>
+
+* there is one issue, we need to add <script type="module"> so it treats it as a module and solves the issue of not showing the styles
+
+
+* REAL LIFE USAGE) we can put App in a seperate component
+import myComponent from './myComponent.js'
+export default {
+    data() {
+        return {
+
+        }
+      },
+      components: {
+        'my-component' : myComponent
+      }
+}
+<script type="module">
+   import App from './js/components/App.js';
+   Vue.createApp(App).mount("#app");
+</script>
+
+___________________________________________________________
+
+Computed Property)
+
+* no need to be called, it gets called by itself, as the properties used inside changes.
+
+<div class="computed">
+    <h1>Using computed method : {{getFullName}}</h1>
+</div>
+computed: {
+    getFullName : function(){
+         return this.firstName + " " + this.lastName;
+   }
+
+Method is a function/dynamic but computed is a property/statis
+_____________________________________________________________
+
+Watch)
+
+* Needless to specially assign any events and wait for it to change and do the extra work of validating. Watch takes care of updating the textboxes with the calculation done in the respective functions.
+
+watch : {
+               kilometers:function(val) {
+                  this.kilometers = val;
+                  this.meters = val * 1000;
+        },
+               meters : function (val) {
+                  this.kilometers = val/ 1000;
+                  this.meters = val;
+               }
+            }
+
+<div class ="watch">
+     Kilometers : <input type = "text" v-model= "kilometers">
+     Meters : <input type = "text" v-model= "meters">
+</div>
+
+________________________________________________________
+
+Binding HTML Attributes) v-bind | :
+
+hreflink : "http://www.google.com"
+<a v-bind:href = "hreflink" target = "_blank">Click Me </a>
+* shorthand
+<a :href = "hreflink" target = "_blank">Click Me </a>
+
+______________
+
+Binding HTML Classes) 
+
+isactive : true
+<div v-bind:class = "{active:isactive}"><b>CLASS BINDING</b></div>
+
+______________
+
+
+.info {
+            color: #00529B;
+            background-color: #BDE5F8;
+         }
+.active {
+            color: #4F8A10;
+            background-color: #DFF2BF;
+         }
+.displayError{
+            color: #D8000C;
+            background-color: #FFBABA;
+         }
+isActive : true,
+hasError : false
+<div class = "info"  v-bind:class = "{ active: isActive, 'displayError': hasError }">Class Binding</div>
+
+_________________________________________________________
+
+Conditional Rendering)
+
+v-if)
+show: true,
+showdata : function() {
+    this.show = !this.show;
+ }
+<button v-on:click = "showdata" v-bind:style = "styleobj">Click Me</button>
+* Now, if show is true “This is h1 tag” will be displayed, and if false “This is h2 tag” will be displayed.
+<h1 v-if = "show">This is h1 tag</h1>
+<h2 v-else>This is h2 tag</h2>
+
+List Rendering)
+v-for)
+items:[],
+showinputvalue : function(event) {
+    this.items.push(event.target.value);
+}
+<input type = "text" v-on:keyup.enter = "showinputvalue" placeholder = "Enter Fruits Names"/>
+<ul>
+   <li v-for = "a in items">{{a}}</li>
+</ul>
+
+_________________________________________________________
+
+Transition and Animation)
+
+* built-in component
+<transition name = "nameoftransition">
+   <div></div>
+</transition>
+
+
+show: true,
+
+<button v-on:click = "show = !show">Click Me</button>
+    <transition name = "fade">
+       <p v-show = "show" v-bind:style = "styleanim">Animation Example</p>
+</transition>
+
+styleanim : {
+    fontSize:'30px',
+    color:'red'
+},
+                    
+__________________________________________________________
+
+Custom Directives)
+
+<div v-echo>VueJS Directive</div>
+
+app.directive('echo', (el, binding) => {
+            // this will be called for both `mounted` and `updated`
+            // el.style.color = binding.value
+            e1.style.color = "red";
+            e1.style.fontSize = "30px";
+   })
+
+__________________________________________________________
+
+Routing)
+
+* install routing)
+* using npm
+==> npm  install vue-router
+* using github
+==> git clone https://github.com/vuejs/vue-router.git node_modules/vue-router
+==> cd node_modules/vue-router
+==> npm install
+==> npm run build
+
+* router config folder ./router)
+import { createWebHistory, createRouter } from "vue-router";
+import Home from "@/views/Home.vue";
+import About from "@/views/About.vue";
+
+const routes = [
+  {
+    path: "/",
+    name: "Home",
+    component: Home,
+  },
+  {
+    path: "/about",
+    name: "About",
+    component: About,
+  },
+];
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
+});
+
+export default router;
+
+* include routing)
+import { createApp } from 'vue'
+import App from './App.vue'
+import router from './router'
+createApp(App).use(router).mount('#app')
+
+* add vue-router to head
+<script src="./js/vue-router.js"></script>
+
+_________________________________________________________
+
+Vue Mixin)
+
+__________________________________________________________
+
+Rendering Function)
+
+_________________________________________________________
+
+
