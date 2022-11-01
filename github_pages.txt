@@ -1,0 +1,28 @@
+How to make a github website 
+
+1. A GitHub account.
+2. Git or Git client.
+3. A website theme
+
+
+- create a new repository named username.github.io
+e.g: ahmadzara.github.io
+
+- download a theme
+
+- uncompress the file
+
+- clone your remote/online repository to vscode
+e.g: git clone https://github.com/ahmadzara/ahmadzara.github.io.git
+
+- copy the extracted content to this path
+
+- run these commands in terminal
+cd brianmwevi.github.io // replace brianmwevi with your username
+git add . // alerts git of the updates we need to add to our repo
+git commit -m “Initial Commit” // saves the updates added above
+git push// pushes updates we made to the remote repo
+
+- navigate to http://githubusername.github.io
+e.g: http://ahmadzara.github.io
+
