@@ -2,12 +2,11 @@ VueJS - Install)
 
 1. CDN
 2. Using NPM 
-==> npm  install vue
-3. Using CLI Command Line
+==> npm init vue@latest
+==> cd <project name> | npm install | npm run dev
 ==> npm install --global vue-cli
-==> vue init webpack myproject
 ==> cd myproject | npm install | npm run dev
-4. Using the GUI
+3. Using the GUI
 ==> vue create [name]
 ==> vue create --help
 ==> vue ui
@@ -18,9 +17,35 @@ ____________________________________________________________
 
 Syntax)
 
-var app = new Vue({
+const app = new Vue({
    // options
 })
+
+* we can even use the app assigned to Vue in console to change the content
+<div id="app">
+        <h1>{{ greetings }} {{ greetings.length }}</h1>
+        <input type="text" v-model="greetings">
+</div> 
+ const app = Vue.createApp({
+            data(){
+                return{
+                    greetings: "Hello World"
+                }
+            }
+}).mount("#myVue")
+
+* in console)
+myVue.greetings = "Vue is amazing"
+* tap enter and view will be binded again
+"Vue is amazing"
+
+
+* we can even manipulate our vue with vue devtools
+
+* we can play around the code in console, using $vm0 which is a our first application instance
+$vm0.data.greetings
+&
+$vm0.data.greetings = "my text is changing"
 
 _______________________________________________________
 
@@ -42,6 +67,20 @@ const app = Vue.createApp({
 }).mount("#app");
 
 _________________________________________________________
+
+Vue power with js)
+
+* we can even use javascript expressions inside the mustache brackets
+* the drawback is that we can only use one js expression at a time
+
+<h1>{{ greetings.toLocaleUpperCase()}</h1>
+<h1>{{ greetings.toLocaleLowerCase()}}</h1>
+
+* we can also use ternary or OR operator
+
+<h1>{{ greetings ? greetings : 'Welcome' }}</h1>
+<h1>{{ greetings || 'Welcome' }}</h1>
+__________________________________________________________
 
 using method()
 
@@ -108,6 +147,22 @@ ________________________________________________________
 
 v-for)
 
+<ul>
+    <li v-for="item in items" :key="item.id">{{ item.name }}</li>
+</ul>
+* it is also recommended to add :key to track unique ids
+items: [
+      {id: 1, name: "item 1"},
+      {id: 2, name: "item 2"},
+      {id: 3, name: "item 3"},
+]
+
+* we can also manipulate the reactive v-for from console
+* we can both push and pop items
+==> myVue.items.push({id: 4, name: 'item 4'})
+
+
+
  <section v-show="inprogressAssignment.length">
         <h2>In progress:</h2>
         <ul>
@@ -147,6 +202,8 @@ computed: {
         return this.assignments.filter(assignment => !assignment.completed)
       }
     }
+
+
 ________________________________________________________
 
 Events) v-on | @
@@ -226,7 +283,9 @@ htmlcontent : "<div><h1>Vue Js Template</h1></div>"
 
 __________________________________________________________
 
-Bind Attributes)
+Bind Attributes) v-bind & v-model
+
+* v-bind)
 
 <img src="{{ image }}" alt="" width="200" height="200">
 image: "https://picsum.photos/200/300"
@@ -234,7 +293,71 @@ image: "https://picsum.photos/200/300"
 * v-bind must be added to assign any attributes to html tag
 <img v-bind:src="image" alt="" width="200" height="200">
 
+
+
+* v-model)
+
+* using .lazy modifier, output will not be printed unless exit input.
+<input v-model="newItem.lazy" type="text" placeholder="Add an item">
+<h3>{{ newItem }}</h3>
+
+* radio button
+<input v-model="newItem" type="text" placeholder="Add an item">
+<label for=""><input type="radio" v-model="newItemPriority" value="low">Low</label>
+<label for=""><input type="radio" v-model="newItemPriority" value="high">High</label>
+<h3>{{ newItem }} {{ newItemPriority }}</h3>
+        
+newItem: "",
+newItemPriority: "low"
+
+* select tag
+ Priority:
+<select v-model="newItemPriority">
+            <option value="low">Low</option>
+            <option value="high">High</option>
+</select>
+
+* to add an item to the list
+<input v-model="newItem" type="text" placeholder="Add an item">
+<button v-on:click="addItems">Add Items</button>
+ methods:{
+                addItems(){
+                this.items.push({
+                    id: this.items.length + 1,
+                    name: this.newItem,
+                });
+                }
+ }
+ 
+data(){return{ newItem: ""}}
+
+* or even pass the fucntion through click event directly
+<button
+   v-on:click="items.push({name:newItem,id:items.length+1})">
+   Add Items
+</button>
+
+* we can use the keyup.enter to add items with enter
+<input
+   v-on:keyup.enter="items.push({name:newItem,id:items.length+1})"
+   v-model="newItem"
+   type="text"
+   placeholder="Add an item"
+>
+
+* note that the input does not refresh its value because we did not reset our new items when added.
+* to solve this we need to specity an empty strig for our newItem in methods()
+==> this.newItems = "";
+
 __________________________________________________________
+
+HTML attributes binding)
+
+<a v-bind:href="newItem">Dynamic Link</a>
+* bind to input and it will be updated automatically.
+
+v-bind:disabled="newItem.length === 0"
+___________________________________________________________
 
 Components)
 
@@ -312,6 +435,9 @@ ___________________________________________________________
 
 Computed Property)
 
+* when we need to change data, we use methods.
+* when we need to change the presentation of the data we use computed property.
+
 * no need to be called, it gets called by itself, as the properties used inside changes.
 
 <div class="computed">
@@ -323,6 +449,33 @@ computed: {
    }
 
 Method is a function/dynamic but computed is a property/statis
+
+
+* to count the input characters
+<input
+        v-on:keyup.enter="items.push({name:newItem,id:items.length+1})"
+        v-model="newItem"
+        type="text"
+        placeholder="Add an item"
+>
+
+<span class="counter">{{ characterCount }}/200</span>
+
+computed:{
+                characterCount(){
+                    return this.newItem.length;
+                }
+ }
+
+* to reverse items in v-for we can use computed property which should not change the attribute values
+* we make sure that we add [...] to acts as a copy
+
+<li v-for="item in reversedItems" :key="item.id">{{ item.name }}</li>
+reversedItems(){
+     // return this.items.slice().reverse();
+     return [...this.items].reverse();
+}
+
 _____________________________________________________________
 
 Watch)
@@ -404,6 +557,27 @@ showinputvalue : function(event) {
 <ul>
    <li v-for = "a in items">{{a}}</li>
 </ul>
+
+
+* if comment out all items
+<p v-if="items.length === 0">Nice job! you've bought all the items!</p>
+
+* if applied to the parent section, it will set display to none, when an attribute is false.
+<section id="shopping-list" v-if="editing"></section>
+editing: false, * in data
+
+* add buttons to toggle between showing the section and hiding it.
+  <section id="shopping-list">
+            <button @click="doEdit(false)" v-if="editing" class="btn btn-primary">Cancel</button>
+            <button @click="doEdit(true)" v-else class="btn btn-primary">Add Items</button>
+  </section>
+
+<section v-if="editing">our forms are here</section>
+
+ doEdit(editing){
+                    this.editing = editing;
+                    this.newItem = "" * to ensure emptying the input
+                }
 
 _________________________________________________________
 
@@ -496,5 +670,3 @@ __________________________________________________________
 Rendering Function)
 
 _________________________________________________________
-
-
