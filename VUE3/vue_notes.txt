@@ -1,0 +1,574 @@
+VueJS - Install)
+
+1. CDN
+2. Using NPM 
+==> npm init vue@latest
+==> cd <project name> | npm install | npm run dev
+==> npm install --global vue-cli
+==> cd myproject | npm install | npm run dev
+3. Using the GUI
+==> vue create [name]
+==> vue create --help
+==> vue ui
+
+* install "Vue.js devtools" chrome extension, inspect your element, a Vue section has been added which you can use as a helper.
+
+____________________________________________________________
+
+Syntax)
+
+const app = new Vue({
+   // options
+})
+
+* we can even use the app assigned to Vue in console to change the content
+<div id="app">
+        <h1>{{ greetings }} {{ greetings.length }}</h1>
+        <input type="text" v-model="greetings">
+</div> 
+ const app = Vue.createApp({
+            data(){
+                return{
+                    greetings: "Hello World"
+                }
+            }
+}).mount("#myVue")
+
+* in console)
+myVue.greetings = "Vue is amazing"
+* tap enter and view will be binded again
+"Vue is amazing"
+
+
+* we can even manipulate our vue with vue devtools
+
+* we can play around the code in console, using $vm0 which is a our first application instance
+$vm0.data.greetings
+&
+$vm0.data.greetings = "my text is changing"
+
+_______________________________________________________
+
+data and its source of truth)
+
+<div id="app">
+
+<input type="text" v-model="greeting">
+<h1>{{ greeting }} ({{ greeting.length }})</h1>
+
+</div>
+
+const app = Vue.createApp({
+    data() {
+        return {
+            greeting: 'Hello Vue!',
+        }
+    }
+}).mount("#app");
+
+_________________________________________________________
+
+Vue power with js)
+
+* we can even use javascript expressions inside the mustache brackets
+* the drawback is that we can only use one js expression at a time
+
+<h1>{{ greetings.toLocaleUpperCase()}</h1>
+<h1>{{ greetings.toLocaleLowerCase()}}</h1>
+
+* we can also use ternary or OR operator
+
+<h1>{{ greetings ? greetings : 'Welcome' }}</h1>
+<h1>{{ greetings || 'Welcome' }}</h1>
+__________________________________________________________
+
+using method()
+
+<div id="app">
+    <h1>Firstname : {{firstName}}</h1>
+    <h1>Lastname : {{lastName}}</h1>
+    <h3>{{ fullName() }}</h3>
+</div>
+
+<script>
+    const app = Vue.createApp({
+        data() {
+            return {
+                firstName: 'Ahmad',
+                lastName: 'Zare'
+            }
+        },
+        methods: {
+            fullName() {
+                return this.firstName + ' ' + this.lastName;
+            }
+        }
+    }).mount("#app");
+</script>
+
+_______________________________________________________
+
+toggle button text color)
+
+1st way:
+style)
+ .text-red{
+      color:red;
+    }
+  .text-green{
+      color:green;
+   }
+html)
+<button :class="color" @click="changeColor">click me</button>
+data) 
+color: 'text-green'
+method)
+changeColor() {
+     this.color = this.color === 'text-green' ? 'text-red' : 'text-green'
+}
+
+2nd way:
+<button :class="active ? 'text-red' : 'text-green'" @click="toggle">click me</button>
+active: false
+toggle(){
+        this.active = !this.active;
+}
+________________________________________________________
+
+using mounted()
+
+* automatically fires when page loads
+mounted() {
+      setTimeout(() => {
+        this.greeting = 'Changed!!!'
+      }, 3000)
+}
+
+________________________________________________________
+
+v-for)
+
+<ul>
+    <li v-for="item in items" :key="item.id">{{ item.name }}</li>
+</ul>
+* it is also recommended to add :key to track unique ids
+items: [
+      {id: 1, name: "item 1"},
+      {id: 2, name: "item 2"},
+      {id: 3, name: "item 3"},
+]
+
+* we can also manipulate the reactive v-for from console
+* we can both push and pop items
+==> myVue.items.push({id: 4, name: 'item 4'})
+
+
+
+ <section v-show="inprogressAssignment.length">
+        <h2>In progress:</h2>
+        <ul>
+          <li v-for="assignment in inprogressAssignment" :key="assignment.id">
+            <label>
+              {{assignment.name}}
+              <input type="checkbox" v-model="assignment.completed">
+            </label>
+          </li>
+        </ul>
+      </section>
+
+      <section v-show="completedAssignment.length">
+        <h2>Completed:</h2>
+        <ul>
+          <li v-for="assignment in completedAssignment" :key="assignment.id">
+            <label>
+              {{assignment.name}}
+              <input type="checkbox" v-model="assignment.completed">
+            </label>
+          </li>
+        </ul>
+      </section>
+
+ assignments: [
+            {id: 1, name: 'Assignment 1', completed: false},
+            {id: 2, name: 'Assignment 2', completed: true},
+            {id: 3, name: 'Assignment 3', completed: false},
+            {id: 4, name: 'Assignment 4', completed: false},
+]
+* we use computed to have a DRY code
+computed: {
+      completedAssignment() {
+        return this.assignments.filter(assignment => assignment.completed)
+      },
+      inprogressAssignment(){
+        return this.assignments.filter(assignment => !assignment.completed)
+      }
+    }
+
+
+________________________________________________________
+
+Events) v-on | @
+
+* we want to add to our todo list using a submit form
+* when we click on input form submits the data and page refreshes
+* to prevent refereshing the page, we can pass a parameter to method "e" and use e.preventDefault() or add prevent to form event ==> @submit.prevent=""
+
+<section>
+        <form @submit.prevent="addAssignment" class="form-control">
+          <h5>Add new assignment:</h5>
+          <input class="text-muted" type="text" v-model="newAssignment" placeholder="New Assignment...">
+          <button class="btn btn-secondary" type="submit">Add</button>
+        </form>
+</section>
+
+newAssignment: '' * in data()
+
+ method:{
+        addAssignment(){
+          this.assignments.push({
+            id: this.assignments.length + 1,
+            name: this.newAssignment,
+            completed: false
+          });
+          this.newAssignment = '';
+        }
+}
+
+
+
+
+
+
+styleobj : {
+     width:"100px",
+     height:"50px",
+     backgroundColor:"red"
+}
+<div v-bind:style = "styleobj" v-on:mouseover = "changebgcolor" v-on:mouseout = "originalcolor"></div> -->
+* shorthand
+<div :style = "styleobj" @mouseover = "changebgcolor" @mouseout = "originalcolor">Event Handling</div>
+
+changebgcolor : function() {
+      this.styleobj.backgroundColor = "green";
+   },
+originalcolor : function() {
+       this.styleobj.backgroundColor = "red";
+}
+
+Event Modifiers)
+
+* .once ==> let event executes only oncev
+<button v-on:click.once = "buttonclicked">Click Once</button>
+* .prevent ==> prevents to open the link
+<a href = "http://www.google.com" v-on:click.prevent = "clickme">Click Me</a>
+
+Event Key Modifiers) V-on.eventname.keyname
+* runs onlu we press enter
+<input type = "text"  v-on:keyup.enter = "showinputvalue"/>
+name: ''
+<input type = "text" v-on:keyup.enter = "showinputvalue" placeholder = "Enter your name"/>
+<h3> {{name}}</h3>
+showinputvalue : function(event) {
+     this.name=event.target.value;
+}
+* using multiple
+==> V-on.keyup.ctrl.enter
+
+____________________________________________________________
+
+Template)
+
+htmlcontent : "<div><h1>Vue Js Template</h1></div>"
+<div v-html = "htmlcontent"></div>
+* v-html directive must be used to let vue reading it
+
+__________________________________________________________
+
+Bind Attributes) v-bind & v-model
+
+* v-bind)
+
+<img src="{{ image }}" alt="" width="200" height="200">
+image: "https://picsum.photos/200/300"
+
+* v-bind must be added to assign any attributes to html tag
+<img v-bind:src="image" alt="" width="200" height="200">
+
+
+
+* v-model)
+
+* using .lazy modifier, output will not be printed unless exit input.
+<input v-model="newItem.lazy" type="text" placeholder="Add an item">
+<h3>{{ newItem }}</h3>
+
+* radio button
+<input v-model="newItem" type="text" placeholder="Add an item">
+<label for=""><input type="radio" v-model="newItemPriority" value="low">Low</label>
+<label for=""><input type="radio" v-model="newItemPriority" value="high">High</label>
+<h3>{{ newItem }} {{ newItemPriority }}</h3>
+        
+newItem: "",
+newItemPriority: "low"
+
+* select tag
+ Priority:
+<select v-model="newItemPriority">
+            <option value="low">Low</option>
+            <option value="high">High</option>
+</select>
+
+* to add an item to the list
+<input v-model="newItem" type="text" placeholder="Add an item">
+<button v-on:click="addItems">Add Items</button>
+ methods:{
+                addItems(){
+                this.items.push({
+                    id: this.items.length + 1,
+                    name: this.newItem,
+                });
+                }
+ }
+ 
+data(){return{ newItem: ""}}
+
+* or even pass the fucntion through click event directly
+<button
+   v-on:click="items.push({name:newItem,id:items.length+1})">
+   Add Items
+</button>
+
+* we can use the keyup.enter to add items with enter
+<input
+   v-on:keyup.enter="items.push({name:newItem,id:items.length+1})"
+   v-model="newItem"
+   type="text"
+   placeholder="Add an item"
+>
+
+* note that the input does not refresh its value because we did not reset our new items when added.
+* to solve this we need to specity an empty strig for our newItem in methods()
+==> this.newItems = "";
+
+__________________________________________________________
+
+HTML attributes binding)
+
+<a v-bind:href="newItem">Dynamic Link</a>
+* bind to input and it will be updated automatically.
+
+v-bind:disabled="newItem.length === 0"
+___________________________________________________________
+
+Components)
+
+* make a vue file in components names MyInput
+<template>
+    <div class="input-group input-group-lg mb-3">
+        <input @input="$emit('updateInput',$event)" type="text" class="form-control" placeholder="Add your task" v-model="newItem">
+        <div class="input-group-append">
+          <button @click="$emit('add')" class="btn btn-outline-dark btn-lg" type="button">Add</button>
+        </div>
+    </div>
+</template>
+<script>
+export default {
+    props: ['newItem'],
+    emits: ['updateInput']
+    }
+</script>
+
+* import it in app.Vue
+import MyInput from './components/MyInput.vue';
+
+* initialize it in data
+ components: {
+    v_input: MyInput
+  },
+
+* add it in body
+ <v_input :newItem="newItem" @updateInput="updateInput" @add="addItem"/>
+
+___________________________________________________________
+
+Computed Property)
+
+* when we need to change data, we use methods.
+* when we need to change the presentation of the data we use computed property.
+
+* no need to be called, it gets called by itself, as the properties used inside changes.
+
+<div class="computed">
+    <h1>Using computed method : {{getFullName}}</h1>
+</div>
+computed: {
+    getFullName : function(){
+         return this.firstName + " " + this.lastName;
+   }
+
+Method is a function/dynamic but computed is a property/statis
+
+
+* to count the input characters
+<input
+        v-on:keyup.enter="items.push({name:newItem,id:items.length+1})"
+        v-model="newItem"
+        type="text"
+        placeholder="Add an item"
+>
+
+<span class="counter">{{ characterCount }}/200</span>
+
+computed:{
+                characterCount(){
+                    return this.newItem.length;
+                }
+ }
+
+* to reverse items in v-for we can use computed property which should not change the attribute values
+* we make sure that we add [...] to acts as a copy
+
+<li v-for="item in reversedItems" :key="item.id">{{ item.name }}</li>
+reversedItems(){
+     // return this.items.slice().reverse();
+     return [...this.items].reverse();
+}
+
+_____________________________________________________________
+
+Watch)
+
+* Needless to specially assign any events and wait for it to change and do the extra work of validating. Watch takes care of updating the textboxes with the calculation done in the respective functions.
+
+kilometers: '',
+meters: ''
+
+watch : {
+               kilometers:function(val) {
+                  this.kilometers = val;
+                  this.meters = val * 1000;
+        },
+               meters : function (val) {
+                  this.kilometers = val/ 1000;
+                  this.meters = val;
+               }
+            }
+
+<div class ="watch">
+     Kilometers : <input type = "text" v-model= "kilometers">
+     Meters : <input type = "text" v-model= "meters">
+</div>
+
+________________________________________________________
+
+Binding HTML Attributes) v-bind | :
+
+hreflink : "http://www.google.com"
+<a v-bind:href = "hreflink" target = "_blank">Click Me </a>
+* shorthand
+<a :href = "hreflink" target = "_blank">Click Me </a>
+
+______________
+
+Binding HTML Classes) 
+
+isactive : true
+<div v-bind:class = "{active:isactive}"><b>CLASS BINDING</b></div>
+
+______________
+
+
+.info {
+            color: #00529B;
+            background-color: #BDE5F8;
+         }
+.active {
+            color: #4F8A10;
+            background-color: #DFF2BF;
+         }
+.displayError{
+            color: #D8000C;
+            background-color: #FFBABA;
+         }
+isActive : true,
+hasError : false
+<div class = "info"  v-bind:class = "{ active: isActive, 'displayError': hasError }">Class Binding</div>
+
+_________________________________________________________
+
+Conditional Rendering)
+
+v-if)
+show: true,
+showdata : function() {
+    this.show = !this.show;
+ }
+<button v-on:click = "showdata" v-bind:style = "styleobj">Click Me</button>
+* Now, if show is true “This is h1 tag” will be displayed, and if false “This is h2 tag” will be displayed.
+<h1 v-if = "show">This is h1 tag</h1>
+<h2 v-else>This is h2 tag</h2>
+
+List Rendering)
+v-for)
+items:[],
+showinputvalue : function(event) {
+    this.items.push(event.target.value);
+}
+<input type = "text" v-on:keyup.enter = "showinputvalue" placeholder = "Enter Fruits Names"/>
+<ul>
+   <li v-for = "a in items">{{a}}</li>
+</ul>
+
+
+* if comment out all items
+<p v-if="items.length === 0">Nice job! you've bought all the items!</p>
+
+* if applied to the parent section, it will set display to none, when an attribute is false.
+<section id="shopping-list" v-if="editing"></section>
+editing: false, * in data
+
+* add buttons to toggle between showing the section and hiding it.
+  <section id="shopping-list">
+            <button @click="doEdit(false)" v-if="editing" class="btn btn-primary">Cancel</button>
+            <button @click="doEdit(true)" v-else class="btn btn-primary">Add Items</button>
+  </section>
+
+<section v-if="editing">our forms are here</section>
+
+ doEdit(editing){
+                    this.editing = editing;
+                    this.newItem = "" * to ensure emptying the input
+                }
+
+_________________________________________________________
+
+Transition and Animation)
+
+* built-in component
+<transition name = "nameoftransition">
+   <div></div>
+</transition>
+
+
+show: true,
+
+<button v-on:click = "show = !show">Click Me</button>
+    <transition name = "fade">
+       <p v-show = "show" v-bind:style = "styleanim">Animation Example</p>
+</transition>
+
+styleanim : {
+    fontSize:'30px',
+    color:'red'
+},
+                    
+__________________________________________________________
+
+
+Routing)
+
+Vue Mixin)
+
+_________________________________________________________
+
+
